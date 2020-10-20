@@ -25,24 +25,24 @@ const TodoListApp = () => {
   //localStorage.setItem("titles", JSON.stringify([]))
 
   function addTitle(title:string) {
-    console.log("adding a title")
+    //console.log("adding a title")
     var titles = JSON.parse(String(localStorage.getItem("titles")))
-    console.log("titles so far: " + titles)
+    //console.log("titles so far: " + titles)
     if (titles === null) {
       titles = []
     }
     if (!(titles.includes(title))) {
       titles.push(title)
     }
-    console.log(titles)
+    //console.log(titles)
     localStorage.setItem("titles", JSON.stringify(titles))
-    console.log(JSON.parse(String(localStorage.getItem("titles"))))
-    console.log(getTitles())
+    // console.log(JSON.parse(String(localStorage.getItem("titles"))))
+    // console.log(getTitles())
   }
 
   function removeTitle(title:string) { //removes a title if it is present
     const titles = JSON.parse(String(localStorage.getItem("titles")))
-    const index = titles.indexOf(5);
+    const index = titles.indexOf(title);
     if (index > -1) {
       titles.splice(index, 1);
     }
@@ -98,7 +98,7 @@ const TodoListApp = () => {
       setTitle(parsedTitle)
     }
     const parsedTodos = JSON.parse(String((localStorage.getItem(title))))
-    if (parsedTodos === null) {
+    if (parsedTodos === null || parsedTodos === '') {
       setTodos([])
     } else {
       setTodos(parsedTodos)
@@ -110,21 +110,22 @@ const TodoListApp = () => {
   //   localStorage.setItem("title", JSON.stringify(title))
   // }, [todos, title])
 
-  const saveTodoList = () => {
+  const saveCurrentTodoList = () => {
     localStorage.setItem(title, JSON.stringify(todos))
     addTitle(title)
-    window.location.reload(false);
+    refresh() //this might be more aggressive than necessary
   }
 
   const deleteCurrentTodoList = () => {
     removeTitle(title)
-    localStorage.setItem(title, JSON.stringify(null))
+    localStorage.setItem(title, JSON.stringify(null)) //SANITIZE DATA!!! THIS WILL BREAK IF A USER HAS TITLE "TITLES"!!!
     setTitle('')
     setTodos([])
+    refresh()
     //history.push('/new') //Fix this
   }
 
-  const unsaveTodoList = (titleToDelete:string) => {
+  const unsaveSpecificTodoList = (titleToDelete:string) => {
     removeTitle(titleToDelete)
     localStorage.setItem(titleToDelete, JSON.stringify(null))
   }
@@ -136,6 +137,8 @@ const TodoListApp = () => {
 
   const deleteEverything = () => {
     localStorage.clear();
+    clearCurrentTodoList()
+    refresh()
 
     //Do it this way eventually to avoid clearing other things
     // const titles = getTitles()
@@ -151,6 +154,10 @@ const TodoListApp = () => {
     setTitle(titleToOpen)
     setTodos(JSON.parse(String((localStorage.getItem(titleToOpen)))))
     //history.push('/current')
+  }
+
+  function refresh() {
+    window.location.reload(false);
   }
 
 //New, current, old
@@ -182,7 +189,7 @@ const TodoListApp = () => {
             <div className="todo-list-app">
               {(title === null || title === '') && "No current list"}
               <h2>{title}</h2>
-              {title && 
+              {!(title === null || title === '') && 
                 <div>
                   <TodoForm 
                     todos={todos}
@@ -196,14 +203,14 @@ const TodoListApp = () => {
                     handleTodoBlur={handleTodoBlur}
                   />
                   <TodoListDownloadButton todos={todos}/>
-                  <button onClick={saveTodoList}>Save Todo List</button>
+                  <button onClick={saveCurrentTodoList}>Save Todo List</button>
                   <button onClick={deleteCurrentTodoList}>Delete Todo </button>
-                  <button onClick={deleteEverything}>Delete Everything </button>
               </div>}
+              <button onClick={deleteEverything}>Delete Everything </button>
             </div>
           </Route>
           <Route path="/old">
-            <TodoListList titles={getTitles()} openTodoList={openTodoList}/>
+            <TodoListList titles={getTitles()} openTodoList={openTodoList} />
           </Route>
         </Switch>
       </div>

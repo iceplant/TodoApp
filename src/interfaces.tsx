@@ -46,6 +46,6 @@ export interface TodoListListInterface {
 export interface TodoListItemInterface {
   title: string;
   openTodoList: (title: string) => void;
-  handleTodoListRemove: (id: string) => void;
-  handleTodoListBlur: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  handleTodoListRemove?: (id: string) => void;
+  handleTodoListBlur?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }

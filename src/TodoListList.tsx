@@ -14,18 +14,17 @@ const TodoListList = (props:TodoListListInterface) => {
   console.log(titles)
   return (
     <div className="todo-list-list">
-      {(titles === [] || titles === null) && "There are no saved lists"}
+      {titles.length === 0 && "There are no saved lists"}
       <ul>
         {titles.map((title:string)=>(
           <li>
-            {/* <TodoListItem
-            todo={todo}
-            handleTodoUpdate={props.handleTodoUpdate}
-            handleTodoRemove={props.handleTodoRemove}
-            handleTodoComplete={props.handleTodoComplete}
-            handleTodoBlur={props.handleTodoBlur}
-            /> */}
-            <Link to="/current" onClick={event=>openTodoList(title)}>{title}</Link>
+            <TodoListItem
+              title={title}
+              openTodoList={props.openTodoList}
+              // handleTodoListRemove={props.handleTodoListRemove(title)}
+              // blur?
+            />
+            {/* <Link to="/current" onClick={event=>openTodoList(title)}>{title}</Link> */}
           </li>
         ))}
       </ul>
@@ -39,9 +38,9 @@ const TodoListItem = (props: TodoListItemInterface) => {
   return (
     <div className='todo-list-item'>
       <Link to="/current" onClick={event=>openTodoList(title)}>{title}</Link>
-      <div className='item-remove' onClick={() => props.handleTodoListRemove(title)}>
+      {/* <div className='item-remove' onClick={() => props.handleTodoListRemove(title)}>
       x
-      </div>
+      </div> */}
     </div>
   )
 }
