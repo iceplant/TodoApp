@@ -15,6 +15,17 @@ import {
 } from "react-router-dom";
 import TodoListList from './TodoListList';
 
+import { Layout, Menu, Breadcrumb } from 'antd';
+import {
+  DesktopOutlined,
+  PieChartOutlined,
+  FileOutlined,
+  TeamOutlined,
+  UserOutlined,
+} from '@ant-design/icons';
+
+const { Header, Content, Footer, Sider } = Layout;
+
 // Import styles
 //import './styles/styles.css'
 
@@ -24,7 +35,9 @@ const TodoListApp = () => {
   const history = useHistory();
   //localStorage.setItem("titles", JSON.stringify([]))
 
-  function addTitle(title:string) {
+
+
+  function addTitle(title: string) {
     //console.log("adding a title")
     var titles = JSON.parse(String(localStorage.getItem("titles")))
     //console.log("titles so far: " + titles)
@@ -40,7 +53,7 @@ const TodoListApp = () => {
     // console.log(getTitles())
   }
 
-  function removeTitle(title:string) { //removes a title if it is present
+  function removeTitle(title: string) { //removes a title if it is present
     const titles = JSON.parse(String(localStorage.getItem("titles")))
     const index = titles.indexOf(title);
     if (index > -1) {
@@ -58,26 +71,26 @@ const TodoListApp = () => {
   }
 
 
-  function handleTodoCreate(todo:TodoInterface) {
+  function handleTodoCreate(todo: TodoInterface) {
     const newTodoState: TodoInterface[] = [...todos]
     newTodoState.push(todo)
     setTodos(newTodoState)
   }
 
-  function handleTodoUpdate(event: React.ChangeEvent<HTMLInputElement>, id:string) {
+  function handleTodoUpdate(event: React.ChangeEvent<HTMLInputElement>, id: string) {
     const newTodoState: TodoInterface[] = [...todos]
-    newTodoState.find((todo:TodoInterface) => todo.id === id)!.text = event.target.value
+    newTodoState.find((todo: TodoInterface) => todo.id === id)!.text = event.target.value
     setTodos(newTodoState)
   }
 
-  function handleTodoRemove(id:string) {
-    const newTodoState:TodoInterface[] = todos.filter((todo:TodoInterface) => todo.id !== id)
+  function handleTodoRemove(id: string) {
+    const newTodoState: TodoInterface[] = todos.filter((todo: TodoInterface) => todo.id !== id)
     setTodos(newTodoState)
   }
 
-  function handleTodoComplete(id:string) {
-    const newTodoState:TodoInterface[] = [...todos]
-    newTodoState.find((todo : TodoInterface)=>todo.id === id)!.isCompleted = !newTodoState.find((todo : TodoInterface)=>todo.id === id)!.isCompleted
+  function handleTodoComplete(id: string) {
+    const newTodoState: TodoInterface[] = [...todos]
+    newTodoState.find((todo: TodoInterface) => todo.id === id)!.isCompleted = !newTodoState.find((todo: TodoInterface) => todo.id === id)!.isCompleted
     setTodos(newTodoState)
   }
 
@@ -125,7 +138,7 @@ const TodoListApp = () => {
     //history.push('/new') //Fix this
   }
 
-  const unsaveSpecificTodoList = (titleToDelete:string) => {
+  const unsaveSpecificTodoList = (titleToDelete: string) => {
     removeTitle(titleToDelete)
     localStorage.setItem(titleToDelete, JSON.stringify(null))
   }
@@ -148,7 +161,7 @@ const TodoListApp = () => {
     // clearCurrentTodoList()
   }
 
-  const openTodoList = (titleToOpen:string) => {
+  const openTodoList = (titleToOpen: string) => {
     console.log(titleToOpen)
     JSON.parse(String((localStorage.getItem(titleToOpen))))
     setTitle(titleToOpen)
@@ -160,38 +173,59 @@ const TodoListApp = () => {
     window.location.reload(false);
   }
 
-//New, current, old
+  //New, current, old
   return (
     <Router>
       <div>
-        <nav>
-          <ul>
-            <li>
-              <Link to="/new">new</Link>
-            </li>
-            <li>
-              <Link to="/current">current</Link>
-            </li>
-            <li>
-              <Link to="/old">old</Link>
-            </li>
-          </ul>
-        </nav>
+        <Layout>
+          <Sider style={{
+            overflow: 'auto',
+            height: '100vh',
+            position: 'fixed',
+            left: 0,
+          }}>
+            <nav>
+              {/* <ul>
+                <li>
+                  <Link to="/new">new</Link>
+                </li>
+                <li>
+                  <Link to="/current">current</Link>
+                </li>
+                <li>
+                  <Link to="/old">old</Link>
+                </li>
+              </ul> */}
+            
+            <Menu id="menu" theme="dark" mode="inline" defaultSelectedKeys={['4']}>
+              <Menu.Item className="menu-item" key="1">
+                <Link to="/new">new</Link>
+              </Menu.Item>
+              <Menu.Item className="menu-item" key="2" >
+                <Link className="menu-text" to="/current">current</Link>
+              </Menu.Item>
+              <Menu.Item className="menu-item" key="3" >
+                <Link className="menu-text" to="/old">old</Link>
+              </Menu.Item>
+            </Menu>
+            </nav>
+          </Sider>
+        </Layout>
 
         {/* A <Switch> looks through its children <Route>s and
             renders the first one that matches the current URL. */}
         <Switch>
           {/* <Route path="/"><Redirect to="/new"></Redirect></Route> */}
           <Route path="/new">
-            <TitleForm handleTitleCreate={setTitle} clearCurrentTodoList={clearCurrentTodoList}/>
+            <TitleForm handleTitleCreate={setTitle} clearCurrentTodoList={clearCurrentTodoList} />
           </Route>
           <Route path="/current">
             <div className="todo-list-app">
               {(title === null || title === '') && "No current list"}
               <h2>{title}</h2>
-              {!(title === null || title === '') && 
+              {!(title === null || title === '') &&
                 <div>
-                  <TodoForm 
+                  <TodoForm
                     todos={todos}
                     handleTodoCreate={handleTodoCreate}
                   />
@@ -202,11 +236,11 @@ const TodoListApp = () => {
                     handleTodoComplete={handleTodoComplete}
                     handleTodoBlur={handleTodoBlur}
                   />
-                  <TodoListDownloadButton todos={todos}/>
-                  <button onClick={saveCurrentTodoList}>Save Todo List</button>
-                  <button onClick={deleteCurrentTodoList}>Delete Todo </button>
-              </div>}
-              <button onClick={deleteEverything}>Delete Everything </button>
+                  <TodoListDownloadButton todos={todos} />
+                  <button className={'save'} onClick={saveCurrentTodoList}>Save Todo List</button>
+                  <button className={'delete'} onClick={deleteCurrentTodoList}>Delete Todo </button>
+                </div>}
+              <button className={'delete'} onClick={deleteEverything}>Delete Everything </button>
             </div>
           </Route>
           <Route path="/old">
